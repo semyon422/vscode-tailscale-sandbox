@@ -19,6 +19,12 @@ require_cmd() {
 require_cmd docker
 require_cmd curl
 
+CODE_PORT="$(grep -E '^CODE_PORT=' .env 2>/dev/null | head -n1 | cut -d= -f2- || true)"
+if [[ -z "${CODE_PORT}" ]]; then
+  echo "missing required .env value: CODE_PORT" >&2
+  exit 1
+fi
+
 echo "== docker compose ps =="
 compose ps
 echo
@@ -32,7 +38,7 @@ docker exec ts-code tailscale --socket=/tmp/tailscaled.sock netcheck
 echo
 
 echo "== local http check =="
-curl -fsS -o /dev/null -D - http://127.0.0.1:8443/ | sed -n '1,10p'
+curl -fsS -o /dev/null -D - "http://127.0.0.1:${CODE_PORT}/" | sed -n '1,10p'
 echo
 
 echo "All checks passed."

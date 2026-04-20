@@ -14,6 +14,7 @@ Required `.env` values:
 TS_AUTHKEY=your-tailscale-auth-key
 TS_EXIT_NODE=exit-node-name-or-100.x.y.z
 CODE_PASSWORD=change-this
+CODE_PORT=8443
 UID=1000
 GID=1000
 USER_NAME=youruser
@@ -47,14 +48,14 @@ Stop:
 
 ## Access
 
-- Browser: `http://127.0.0.1:8443`
+- Browser: `http://127.0.0.1:${CODE_PORT}`
 - Workspace mount: `/workspaces/home`
 
 ## Notes
 
 - `code-server` shares the `tailscale` network namespace, so its traffic uses the exit node.
 - The container's Tailscale namespace provides the network sandbox; Codex can use full-access mode inside this already isolated environment.
-- `--exit-node-allow-lan-access=true` is required so the host can still reach `127.0.0.1:8443`.
+- `--exit-node-allow-lan-access=true` is required so the host can still reach `127.0.0.1:${CODE_PORT}`.
 - The host home directory is mounted by default at `/workspaces/home`.
 - Persistent local state in this repo lives in `code-home/` and `tailscale-state/`.
 
@@ -79,4 +80,4 @@ If you install the OpenAI Codex extension inside browser `code-server`:
 
 - Set Codex permissions to `Full access`; this avoids Codex's inner Linux sandbox while the Docker/Tailscale container remains the network sandbox.
 - VS Code forwards the local auth port automatically
-- When prompted for the callback URL, use `http://127.0.0.1:8443/proxy/1455/` instead of `http://localhost:1455`
+- When prompted for the callback URL, use `http://127.0.0.1:${CODE_PORT}/proxy/1455/` instead of `http://localhost:1455`
