@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT_DIR"
+
+compose() {
+  docker compose "$@"
+}
+
+require_cmd() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "missing required command: $1" >&2
+    exit 1
+  fi
+}
+
+require_cmd docker
+require_cmd curl
+
+echo "== docker compose ps =="
+compose ps
+echo
+
+echo "== tailscale status =="
+docker exec ts-code tailscale --socket=/tmp/tailscaled.sock status
+echo
+
+echo "== tailscale netcheck =="
+docker exec ts-code tailscale --socket=/tmp/tailscaled.sock netcheck
+echo
+
+echo "== local http check =="
+curl -fsS -o /dev/null -D - http://127.0.0.1:8443/ | sed -n '1,10p'
+echo
+
+echo "All checks passed."
