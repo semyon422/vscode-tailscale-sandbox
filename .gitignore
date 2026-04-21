@@ -1,4 +1,5 @@
 .codex
 .env
+docker-compose.override.yml
 code-home/
 tailscale-state/

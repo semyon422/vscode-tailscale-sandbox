@@ -1,0 +1,5 @@
+services:
+  code-server:
+    volumes:
+      - /path/on/host:/path/in/container
+      - /another/host/path:/another/container/path

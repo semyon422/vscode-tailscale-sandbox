@@ -21,6 +21,14 @@ USER_NAME=youruser
 TZ=Europe/Moscow
 ```
 
+Optional local mounts can be added with a gitignored Compose override:
+
+```bash
+cp docker-compose.override.yml.example docker-compose.override.yml
+```
+
+Edit the copied file with any host-to-container bind mounts you want, for example `/path/on/host:/path/in/container`.
+
 ## Run
 
 ```bash
@@ -57,6 +65,7 @@ Stop:
 - The container's Tailscale namespace provides the network sandbox; Codex can use full-access mode inside this already isolated environment.
 - `--exit-node-allow-lan-access=true` is required so the host can still reach `127.0.0.1:${CODE_PORT}`.
 - The host home directory is mounted by default at `/workspaces/home`.
+- Local-only bind mounts can live in `docker-compose.override.yml`; mount host shares before starting or restarting the containers.
 - Persistent local state in this repo lives in `code-home/` and `tailscale-state/`.
 
 ## Troubleshooting
