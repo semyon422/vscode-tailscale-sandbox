@@ -32,7 +32,7 @@ Edit the copied file with any host-to-container bind mounts you want, for exampl
 ## Run
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
 Or:
@@ -53,6 +53,16 @@ Stop:
 ```bash
 ./stop
 ```
+
+## Installing packages
+
+The `code-server` container is built from the local `Dockerfile`. Add Debian packages to the `apt-get install` list, then rebuild:
+
+```bash
+docker compose up -d --build
+```
+
+The `./restart` helper also rebuilds the image before starting the sandbox.
 
 ## Access
 

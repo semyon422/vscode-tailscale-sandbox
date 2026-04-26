@@ -1,0 +1,5 @@
+.git
+.env
+code-home
+tailscale-state
+docker-compose.override.yml

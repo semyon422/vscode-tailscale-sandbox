@@ -15,5 +15,5 @@ if [[ -n "${ENV_UID}" && -n "${ENV_GID}" ]]; then
 fi
 
 docker compose down
-docker compose up -d
+docker compose up -d --build
 docker compose ps

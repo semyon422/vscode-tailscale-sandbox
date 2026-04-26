@@ -32,7 +32,9 @@ services:
     restart: unless-stopped
 
   code-server:
-    image: codercom/code-server:latest
+    build:
+      context: .
+    image: vscode-tailscale-sandbox-code-server:local
     container_name: code-server-ts
     depends_on:
       tailscale:
