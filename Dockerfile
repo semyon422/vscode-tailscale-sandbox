@@ -37,4 +37,10 @@ RUN apt-get update \
     zip \
  && rm -rf /var/lib/apt/lists/*
 
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+ && apt-get install -y --no-install-recommends nodejs \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g @mariozechner/pi-coding-agent @anthropic-ai/claude-code @openai/codex @google/gemini-cli
+
 USER coder
