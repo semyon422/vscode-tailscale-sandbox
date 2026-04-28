@@ -100,3 +100,28 @@ If you install the OpenAI Codex extension inside browser `code-server`:
 - Set Codex permissions to `Full access`; this avoids Codex's inner Linux sandbox while the Docker/Tailscale container remains the network sandbox.
 - VS Code forwards the local auth port automatically
 - When prompted for the callback URL, use `http://127.0.0.1:${CODE_PORT}/proxy/1455/` instead of `http://localhost:1455`
+
+## pi Coding Agent with LM Studio
+
+To use the [pi coding agent](https://pi.dev/) with [LM Studio](https://lmstudio.ai/) as the local LLM provider configure the pi agent via `~/.pi/agent/models.json`:
+
+```json
+{
+  "providers": {
+    "lmstudio": {
+      "baseUrl": "http://host.docker.internal:1234/v1",
+      "api": "openai-completions",
+      "apiKey": "lm-studio",
+      "models": [
+        {
+          "id": "qwen/qwen3.6-35b-a3b",
+          "input": [
+            "text",
+            "image"
+          ]
+        }
+      ]
+    }
+  }
+}
+```
