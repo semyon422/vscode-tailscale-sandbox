@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT_DIR"
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "missing required command: docker" >&2
+  exit 1
+fi
+
+# Hardcoded LAN route fix for this host network.
+docker exec ts-code ip route add 192.168.1.0/24 via 172.19.0.1 dev eth0 table 52 2>/dev/null || true
+docker exec ts-code ip route add 192.168.1.0/24 via 172.19.0.1 dev eth0 2>/dev/null || true

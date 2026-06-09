@@ -41,6 +41,19 @@ Or:
 ./restart
 ```
 
+If you start the stack with plain `docker compose up`, apply LAN route exceptions after startup with:
+
+```bash
+./apply-lan-routes
+```
+
+That helper is currently hardcoded for the working route on this machine:
+
+```bash
+docker exec ts-code ip route add 192.168.1.0/24 via 172.19.0.1 dev eth0 table 52
+docker exec ts-code ip route add 192.168.1.0/24 via 172.19.0.1 dev eth0
+```
+
 Check status:
 
 ```bash
@@ -67,6 +80,7 @@ The `./restart` helper also rebuilds the image before starting the sandbox.
 ## Access
 
 - Browser: `http://127.0.0.1:${CODE_PORT}`
+- Local network: `http://<host-lan-ip>:${CODE_PORT}`
 - Workspace mount: `/workspaces/home`
 
 ## Notes
@@ -74,6 +88,8 @@ The `./restart` helper also rebuilds the image before starting the sandbox.
 - `code-server` shares the `tailscale` network namespace, so its traffic uses the exit node.
 - The container's Tailscale namespace provides the network sandbox; Codex can use full-access mode inside this already isolated environment.
 - `--exit-node-allow-lan-access=true` is required so the host can still reach `127.0.0.1:${CODE_PORT}`.
+- Docker already publishes the editor on `0.0.0.0:${CODE_PORT}` and `code-server` itself listens on `0.0.0.0:8080`, so LAN clients must use the host machine's real LAN IP, not `127.0.0.1` or `localhost`.
+- When an exit node is active, Tailscale inside the container can only auto-exempt subnets it can see directly. `./apply-lan-routes` hardcodes the working fix for `192.168.1.0/24` so replies to local devices do not get sent back through the exit node.
 - The host home directory is mounted by default at `/workspaces/home`.
 - Local-only bind mounts can live in `docker-compose.override.yml`; mount host shares before starting or restarting the containers.
 - Persistent local state in this repo lives in `code-home/` and `tailscale-state/`.
@@ -86,6 +102,21 @@ docker compose logs tailscale
 docker exec -it ts-code tailscale --socket=/tmp/tailscaled.sock status
 docker exec -it ts-code tailscale --socket=/tmp/tailscaled.sock netcheck
 ```
+
+- If `http://127.0.0.1:${CODE_PORT}` works on the host but another device on your LAN cannot connect:
+```bash
+hostname -I
+ss -ltnp | grep ":${CODE_PORT}"
+sudo ufw status
+```
+Use the host's LAN IP from `hostname -I`, for example `http://192.168.1.50:${CODE_PORT}`. If the port is listening but still unreachable, the blocker is usually the host firewall, router/AP client isolation, or an extra VM layer such as WSL2 where the port is only forwarded to the host loopback interface.
+
+- If localhost works but the host LAN IP hangs while using an exit node, check Tailscale's route exceptions inside the container:
+```bash
+docker exec ts-code ip route show table 52
+./apply-lan-routes
+```
+You should see `192.168.1.0/24` routed via the Docker bridge gateway instead of only `127.0.0.0/8` and `172.19.0.0/16`. If your LAN subnet changes, update `./apply-lan-routes`.
 
 - If container egress looks broken, test Docker networking first:
 ```bash

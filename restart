@@ -16,4 +16,5 @@ fi
 
 docker compose down
 docker compose up -d --build
+./apply-lan-routes
 docker compose ps
