@@ -35,6 +35,7 @@ RUN apt-get update \
     vim \
     wget \
     zip \
+    cmake \
  && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
